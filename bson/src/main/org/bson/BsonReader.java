@@ -16,6 +16,7 @@
 
 package org.bson;
 
+import com.mongodb.DBRef;
 import org.bson.types.Decimal128;
 import org.bson.types.ObjectId;
 
@@ -403,4 +404,10 @@ public interface BsonReader {
      * @throws org.bson.BSONException if no mark has been set
      */
     void reset();
+
+    /**
+     * Additional functionality
+     * @return
+     */
+    DBRef readDbRef();
 }

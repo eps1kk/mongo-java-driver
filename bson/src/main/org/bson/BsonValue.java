@@ -16,6 +16,8 @@
 
 package org.bson;
 
+import com.mongodb.DBRef;
+
 import static java.lang.String.format;
 
 /**
@@ -26,8 +28,9 @@ import static java.lang.String.format;
 public abstract class BsonValue {
     /**
      * Construct a new instance.  This is package-protected so that the BSON type system is closed.
+     * make public for DBRefs
      */
-    BsonValue() {
+    public BsonValue() {
     }
 
     /**
@@ -160,6 +163,11 @@ public abstract class BsonValue {
     public BsonDbPointer asDBPointer() {
         throwIfInvalidType(BsonType.DB_POINTER);
         return (BsonDbPointer) this;
+    }
+
+    public DBRef asDBRef() {
+        throwIfInvalidType(BsonType.DB_REF);
+        return (DBRef) this;
     }
 
     /**

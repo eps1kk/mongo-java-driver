@@ -63,6 +63,7 @@ public class DBRefCodec implements Codec<DBRef> {
 
     @Override
     public DBRef decode(final BsonReader reader, final DecoderContext decoderContext) {
-        throw new UnsupportedOperationException("DBRefCodec does not support decoding");
+//        throw new UnsupportedOperationException("DBRefCodec does not support decoding");
+        return reader.readDbRef();
     }
 }

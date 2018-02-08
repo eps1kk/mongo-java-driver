@@ -17,6 +17,7 @@
 package org.bson.json;
 
 
+import com.mongodb.DBRef;
 import org.bson.AbstractBsonReader;
 import org.bson.BSONException;
 import org.bson.BsonBinary;
@@ -77,6 +78,26 @@ public class JsonReader extends AbstractBsonReader {
         super();
         scanner = new JsonScanner(json);
         setContext(new Context(null, BsonContextType.TOP_LEVEL));
+    }
+
+    private static byte[] decodeHex(final String hex) {
+        if (hex.length() % 2 != 0) {
+            throw new IllegalArgumentException("A hex string must contain an even number of characters: " + hex);
+        }
+
+        byte[] out = new byte[hex.length() / 2];
+
+        for (int i = 0; i < hex.length(); i += 2) {
+            int high = Character.digit(hex.charAt(i), 16);
+            int low = Character.digit(hex.charAt(i + 1), 16);
+            if (high == -1 || low == -1) {
+                throw new IllegalArgumentException("A hex string can only contain the characters 0-9, A-F, a-f: " + hex);
+            }
+
+            out[i / 2] = (byte) (high * 16 + low);
+        }
+
+        return out;
     }
 
     @Override
@@ -227,6 +248,9 @@ public class JsonReader extends AbstractBsonReader {
                 } else if ("DBPointer".equals(value)) {
                     setCurrentBsonType(BsonType.DB_POINTER);
                     currentValue = visitDBPointerConstructor();
+                } else if ("DBRef".equals(value)) {
+                    setCurrentBsonType(BsonType.DB_REF);
+                    currentValue = visitDBRefConstructor();
                 } else if ("UUID".equals(value)
                            || "GUID".equals(value)
                            || "CSUUID".equals(value)
@@ -272,8 +296,8 @@ public class JsonReader extends AbstractBsonReader {
         }
         return getCurrentBsonType();
     }
-    //CHECKSTYLE:ON
 
+    //CHECKSTYLE:ON
     @Override
     public Decimal128 doReadDecimal128() {
         return (Decimal128) currentValue;
@@ -366,6 +390,11 @@ public class JsonReader extends AbstractBsonReader {
     @Override
     protected BsonDbPointer doReadDBPointer() {
         return (BsonDbPointer) currentValue;
+    }
+
+    @Override
+    protected DBRef doReadDBRef() {
+        return (DBRef) currentValue;
     }
 
     @Override
@@ -763,6 +792,18 @@ public class JsonReader extends AbstractBsonReader {
         return new BsonDbPointer(namespace, id);
     }
 
+    private DBRef visitDBRefConstructor() {
+        verifyToken(JsonTokenType.LEFT_PAREN);
+        String collection = readStringFromExtendedJson();
+        verifyToken(JsonTokenType.COMMA);
+        JsonToken token = popToken();
+        if (!token.getValue(String.class).equals("ObjectId"))
+            throw new JsonParseException("JSON reader expected an ObjectId but found '%s'.", token.getValue());
+        ObjectId id = visitObjectIdConstructor();
+        verifyToken(JsonTokenType.RIGHT_PAREN);
+        return new DBRef(collection, id);
+    }
+
     private int visitNumberIntConstructor() {
         verifyToken(JsonTokenType.LEFT_PAREN);
         JsonToken valueToken = popToken();
@@ -1153,7 +1194,6 @@ public class JsonReader extends AbstractBsonReader {
         return patternToken.getValue(String.class);
     }
 
-
     private String visitSymbolExtendedJson() {
         verifyToken(JsonTokenType.COLON);
         String symbol = readStringFromExtendedJson();
@@ -1378,7 +1418,6 @@ public class JsonReader extends AbstractBsonReader {
         }
     }
 
-
     protected class Context extends AbstractBsonReader.Context {
         protected Context(final AbstractBsonReader.Context parentContext, final BsonContextType contextType) {
             super(parentContext, contextType);
@@ -1391,26 +1430,6 @@ public class JsonReader extends AbstractBsonReader {
         protected BsonContextType getContextType() {
             return super.getContextType();
         }
-    }
-
-    private static byte[] decodeHex(final String hex) {
-        if (hex.length() % 2 != 0) {
-            throw new IllegalArgumentException("A hex string must contain an even number of characters: " + hex);
-        }
-
-        byte[] out = new byte[hex.length() / 2];
-
-        for (int i = 0; i < hex.length(); i += 2) {
-            int high = Character.digit(hex.charAt(i), 16);
-            int low = Character.digit(hex.charAt(i + 1), 16);
-            if (high == -1 || low == -1) {
-                throw new IllegalArgumentException("A hex string can only contain the characters 0-9, A-F, a-f: " + hex);
-            }
-
-            out[i / 2] = (byte) (high * 16 + low);
-        }
-
-        return out;
     }
 }
 

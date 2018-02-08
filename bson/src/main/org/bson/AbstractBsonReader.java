@@ -16,6 +16,7 @@
 
 package org.bson;
 
+import com.mongodb.DBRef;
 import org.bson.types.Decimal128;
 import org.bson.types.ObjectId;
 
@@ -233,6 +234,12 @@ public abstract class AbstractBsonReader implements Closeable, BsonReader {
     protected abstract BsonDbPointer doReadDBPointer();
 
     /**
+     * Handle the logic to read a DBRef
+     * @return the DBRef value
+     */
+    protected abstract DBRef doReadDBRef();
+
+    /**
      * Handles the logic to read the start of an array
      */
     protected abstract void doReadStartArray();
@@ -438,6 +445,13 @@ public abstract class AbstractBsonReader implements Closeable, BsonReader {
         checkPreconditions("readDBPointer", BsonType.DB_POINTER);
         setState(getNextState());
         return doReadDBPointer();
+    }
+
+    @Override
+    public DBRef readDbRef() {
+        checkPreconditions("readDbRef", BsonType.DB_REF);
+        setState(getNextState());
+        return doReadDBRef();
     }
 
     @Override

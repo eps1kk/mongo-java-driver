@@ -16,6 +16,7 @@
 
 package org.bson;
 
+import com.mongodb.DBRef;
 import org.bson.io.BsonInput;
 import org.bson.io.ByteBufferBsonInput;
 import org.bson.types.Decimal128;
@@ -56,6 +57,11 @@ public class BsonBinaryReader extends AbstractBsonReader {
         }
         this.bsonInput = bsonInput;
         setContext(new Context(null, BsonContextType.TOP_LEVEL, 0, 0));
+    }
+
+    @Override
+    protected DBRef doReadDBRef() {
+        throw new UnsupportedOperationException("BsonBinaryReader does not support reading of DBRefs");
     }
 
     @Override

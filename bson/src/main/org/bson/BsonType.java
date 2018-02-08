@@ -112,7 +112,11 @@ public enum BsonType {
     /**
      * A BSON MaxKey value.
      */
-    MAX_KEY(0x7f);
+    MAX_KEY(0x7f),
+    /**
+     * A BSON DBRef value.
+     */
+    DB_REF(0x14);
 
     private static final BsonType[] LOOKUP_TABLE = new BsonType[MIN_KEY.getValue() + 1];
 

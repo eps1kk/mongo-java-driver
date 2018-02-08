@@ -18,6 +18,9 @@
 
 package com.mongodb;
 
+import org.bson.BsonType;
+import org.bson.BsonValue;
+
 import java.io.Serializable;
 
 import static com.mongodb.assertions.Assertions.notNull;
@@ -27,13 +30,19 @@ import static com.mongodb.assertions.Assertions.notNull;
  *
  * @mongodb.driver.manual reference/database-references/ Database References
  */
-public class DBRef implements Serializable {
+public class DBRef extends BsonValue implements Serializable {
 
     private static final long serialVersionUID = -849581217713362618L;
 
     private final Object id;
     private final String collectionName;
     private final String databaseName;
+
+    @Override
+    public BsonType getBsonType() {
+        return null;
+    }
+
 
     /**
      * Construct an instance.

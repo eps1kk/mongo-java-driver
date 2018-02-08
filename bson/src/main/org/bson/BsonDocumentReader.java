@@ -16,6 +16,7 @@
 
 package org.bson;
 
+import com.mongodb.DBRef;
 import org.bson.types.Decimal128;
 import org.bson.types.ObjectId;
 
@@ -149,6 +150,11 @@ public class BsonDocumentReader extends AbstractBsonReader {
     @Override
     protected BsonDbPointer doReadDBPointer() {
         return currentValue.asDBPointer();
+    }
+
+    @Override
+    protected DBRef doReadDBRef() {
+        throw new UnsupportedOperationException("BsonDocumentReader does not support reading of DBRefs");
     }
 
     @Override

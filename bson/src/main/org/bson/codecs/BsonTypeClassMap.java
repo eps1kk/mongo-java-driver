@@ -16,6 +16,7 @@
 
 package org.bson.codecs;
 
+import com.mongodb.DBRef;
 import org.bson.BsonDbPointer;
 import org.bson.BsonRegularExpression;
 import org.bson.BsonTimestamp;
@@ -110,6 +111,7 @@ public class BsonTypeClassMap {
         map.put(BsonType.BOOLEAN, Boolean.class);
         map.put(BsonType.DATE_TIME, Date.class);
         map.put(BsonType.DB_POINTER, BsonDbPointer.class);
+        map.put(BsonType.DB_REF, DBRef.class);
         map.put(BsonType.DOCUMENT, Document.class);
         map.put(BsonType.DOUBLE, Double.class);
         map.put(BsonType.INT32, Integer.class);
